@@ -23,4 +23,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Release
-        run: version="$(head -1 Dockerfile | awk -F: '{print $2}')-${GITHUB_RUN_NUMBER}" make install
+        run: version="$(head -1 Dockerfile | awk -F':' '{print $2}')-${GITHUB_RUN_NUMBER}" make install
