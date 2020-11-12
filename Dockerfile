@@ -12,7 +12,7 @@ ENV GORELEASER_DOWNLOAD_URL=https://github.com/goreleaser/goreleaser/releases/do
 RUN apt-get update && \
     apt-get install -y automake autogen \
     libtool libxml2-dev uuid-dev libssl-dev bash \
-    patch cmake make tar xz-utils bzip2 gzip zlib1g-dev sed cpio \
+    patch cmake make tar xz-utils bzip2 gzip zlib1g-dev sed cpio meson ninja-build \
     gcc-multilib g++-multilib gcc-mingw-w64 g++-mingw-w64 clang llvm-dev libgtk-3-dev --no-install-recommends || exit 1; \
     rm -rf /var/lib/apt/lists/*;
 
@@ -33,6 +33,15 @@ RUN git clone https://github.com/tpoechtrager/osxcross.git && \
 
 ENV PATH $OSX_NDK_X86/bin:$PATH
 ENV LD_LIBRARY_PATH=$OSX_NDK_X86/lib:$LD_LIBRARY_PATH
+
+RUN git clone https://github.com/andlabs/libui.git \
+  && cd libui/ \
+  && mkdir build \
+  && meson setup build --buildtype=release --default-library=static \
+  && ninja -C build \
+  && cp build/meson-out/libui.a /tmp/libui_linux_amd64.a \
+  && cd .. \
+  && rm -Rf libui
 
 RUN mkdir -p /root/.ssh; \
     chmod 0700 /root/.ssh; \
