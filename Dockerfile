@@ -9,11 +9,12 @@ ENV GORELEASER_DOWNLOAD_FILE=goreleaser_Linux_x86_64.tar.gz
 ENV GORELEASER_DOWNLOAD_URL=https://github.com/goreleaser/goreleaser/releases/download/v${GORELEASER_VERSION}/${GORELEASER_DOWNLOAD_FILE}
 
 # Install tools
-RUN apt-get update && \
-    apt-get install -y automake autogen \
-    libtool libxml2-dev uuid-dev libssl-dev bash \
-    patch cmake make tar xz-utils bzip2 gzip zlib1g-dev sed cpio meson ninja-build \
-    gcc-multilib g++-multilib gcc-mingw-w64 g++-mingw-w64 clang llvm-dev libgtk-3-dev --no-install-recommends || exit 1; \
+RUN dpkg --add-architecture i386 && \
+    sed -i.bak 's/^deb/deb [arch=amd64,i386]/' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y automake autogen libtool libxml2-dev uuid-dev libssl-dev bash patch cmake make \
+    tar xz-utils bzip2 gzip zlib1g-dev sed cpio meson ninja-build gcc-multilib g++-multilib \
+    gcc-mingw-w64 g++-mingw-w64 clang llvm-dev libgtk-3-dev libgtk-3-dev:i386 --no-install-recommends || exit 1; \
     rm -rf /var/lib/apt/lists/*;
 
 # Cross compile setup
