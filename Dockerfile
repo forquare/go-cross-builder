@@ -8,6 +8,13 @@ ENV GORELEASER_SHA=97279a80096bc5d044a5172a205c5b80e8f313aa8137ff9a2d400bb220acd
 ENV GORELEASER_DOWNLOAD_FILE=goreleaser_Linux_x86_64.tar.gz
 ENV GORELEASER_DOWNLOAD_URL=https://github.com/goreleaser/goreleaser/releases/download/v${GORELEASER_VERSION}/${GORELEASER_DOWNLOAD_FILE}
 
+
+ENV RELEASE_NOTES_VERSION=0.2.0
+ENV RELEASE_NOTES_SHA=778c8d12df86710783e3aa0841cdccb610d9115911bc7f9e555f32176f920900
+
+ENV RELEASE_NOTES_DOWNLOAD_FILE=github-release-notes-linux-amd64-${RELEASE_NOTES_VERSION}.tar.gz
+ENV RELEASE_NOTES_DOWNLOAD_URL=https://github.com/buchanae/github-release-notes/releases/download/${RELEASE_NOTES_VERSION}/${RELEASE_NOTES_DOWNLOAD_FILE}
+
 # Install tools
 RUN dpkg --add-architecture i386 && \
     sed -i.bak 's/^deb/deb [arch=amd64,i386]/' /etc/apt/sources.list && \
@@ -47,6 +54,11 @@ RUN git clone https://github.com/andlabs/libui.git \
 RUN mkdir -p /root/.ssh; \
     chmod 0700 /root/.ssh; \
     ssh-keyscan github.com > /root/.ssh/known_hosts;
+
+RUN wget ${RELEASE_NOTES_DOWNLOAD_URL}; \
+    echo "$RELEASE_NOTES_SHA $RELEASE_NOTES_DOWNLOAD_FILE" | sha256sum -c - || exit 1; \
+    tar -xzf $RELEASE_NOTES_DOWNLOAD_FILE -C /usr/bin github-release-notes; \
+    rm $RELEASE_NOTES_DOWNLOAD_FILE;
 
 RUN  wget ${GORELEASER_DOWNLOAD_URL}; \
     echo "$GORELEASER_SHA $GORELEASER_DOWNLOAD_FILE" | sha256sum -c - || exit 1; \
